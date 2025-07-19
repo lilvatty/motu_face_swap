@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: "GlacialIndifference";
+  src: url("../public/font/GlacialIndifference-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  font-family: "GlacialIndifference", sans-serif;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none; /* Hide scrollbar in IE and Edge */
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+.main-text {
+  @apply text-[3.25em] font-semibold text-[#002448];
+}
+
+.main-button {
+  @apply text-[3.25em] font-semibold bg-[#002448] text-white;
+}
+
+.height-input {
+  @apply h-[126px];
+}

@@ -1,0 +1,7 @@
+Flask>=2.3.3
+Flask-CORS>=4.0.0
+opencv-python>=4.8.1.78
+Pillow>=10.1.0
+pywin32>=306
+watchdog>=3.0.0
+websocket-client>=1.6.4
