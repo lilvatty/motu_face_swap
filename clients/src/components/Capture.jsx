@@ -121,7 +121,7 @@ export default function Capture({ goBack, goTo }) {
               <video
                 ref={videoRef}
                 autoPlay
-                className="w-full h-full object-cover rounded-3xl transform scale-x-[-1]"
+                className="w-full h-full object-cover rounded-3xl transform scale-x-[-1] rotate-90"
               />
               {isCountingDown && (
                 <div className="absolute inset-0 flex items-center justify-center">
