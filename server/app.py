@@ -98,18 +98,14 @@ class ConfigManager:
                 self.config.read(self.config_file)
                 logger.info(f"Configuration loaded from {self.config_file}")
                 
-                # Ensure all required sections exist, add missing ones
-                self._ensure_required_sections()
-                
                 # Ensure hot folder path is absolute and accessible
-                if self.config.has_section('HotFolder'):
-                    hot_folder_path = self.config['HotFolder']['path']
-                    if not os.path.isabs(hot_folder_path):
-                        # Convert relative path to absolute based on project root
-                        project_root = Path(__file__).parent.parent
-                        hot_folder_path = str(project_root / hot_folder_path)
-                        self.config['HotFolder']['path'] = hot_folder_path
-                        self.save_config()
+                hot_folder_path = self.config['HotFolder']['path']
+                if not os.path.isabs(hot_folder_path):
+                    # Convert relative path to absolute based on project root
+                    project_root = Path(__file__).parent.parent
+                    hot_folder_path = str(project_root / hot_folder_path)
+                    self.config['HotFolder']['path'] = hot_folder_path
+                    self.save_config()
                     
             else:
                 self._create_default_config()
@@ -132,7 +128,6 @@ class ConfigManager:
         # Add image saving configuration
         self.config['ImageSaving'] = {
             'enabled': 'true',
-            'save_folder': r'C:\Users\USER\Downloads\FACESWAP LATEST\generated_image_drive',  # modify here
             'save_format': 'png',
             'include_timestamp': 'true'
         }
@@ -148,42 +143,6 @@ class ConfigManager:
             'default_print_size': '4x6'
         }
         
-        self.save_config()
-    
-    def _ensure_required_sections(self) -> None:
-        """Ensure all required configuration sections exist."""
-        project_root = Path(__file__).parent.parent
-        
-        # Ensure HotFolder section exists
-        if not self.config.has_section('HotFolder'):
-            self.config['HotFolder'] = {
-                'path': str(project_root / 'hot_folder'),
-                'enabled': 'true'
-            }
-        
-        # Ensure ImageSaving section exists
-        if not self.config.has_section('ImageSaving'):
-            self.config['ImageSaving'] = {
-                'enabled': 'true',
-                'save_folder': r'C:\Users\USER\Downloads\FACESWAP LATEST\generated_image_drive',  # modify here
-                'save_format': 'png',
-                'include_timestamp': 'true'
-            }
-        
-        # Ensure Printer section exists
-        if not self.config.has_section('Printer'):
-            try:
-                default_printer = win32print.GetDefaultPrinter()
-            except Exception:
-                default_printer = 'Default Printer'
-                logger.warning("Could not detect default printer")
-            
-            self.config['Printer'] = {
-                'default_printer': default_printer,
-                'default_print_size': '4x6'
-            }
-        
-        # Save the config if any sections were added
         self.save_config()
     
     def _validate_config(self) -> None:
