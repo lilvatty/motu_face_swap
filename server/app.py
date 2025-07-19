@@ -132,7 +132,7 @@ class ConfigManager:
         # Add image saving configuration
         self.config['ImageSaving'] = {
             'enabled': 'true',
-            'save_folder': r'G:\My Drive\Motu Face Swap',  # modify here
+            'save_folder': r'C:\Users\USER\Downloads\FACESWAP LATEST\generated_image_drive',  # modify here
             'save_format': 'png',
             'include_timestamp': 'true'
         }
@@ -165,7 +165,7 @@ class ConfigManager:
         if not self.config.has_section('ImageSaving'):
             self.config['ImageSaving'] = {
                 'enabled': 'true',
-                'save_folder': r'G:\My Drive\Motu Face Swap',  # modify here
+                'save_folder': r'C:\Users\USER\Downloads\FACESWAP LATEST\generated_image_drive',  # modify here
                 'save_format': 'png',
                 'include_timestamp': 'true'
             }
