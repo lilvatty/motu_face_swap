@@ -121,7 +121,11 @@ export default function Capture({ goBack, goTo }) {
               <video
                 ref={videoRef}
                 autoPlay
-                className="w-full h-full object-cover rounded-3xl transform scale-x-[-1] rotate-90"
+                className="min-w-[1526px] min-h-[966px] object-cover rounded-3xl transform scale-x-[-1] rotate-90 origin-center"
+                style={{
+                  width: '1526px',
+                  height: '966px',
+                }}
               />
               {isCountingDown && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -142,7 +146,10 @@ export default function Capture({ goBack, goTo }) {
                     : URL.createObjectURL(capturedPhoto)
                 }
                 alt="Captured"
-                className="w-full h-full object-cover rounded-3xl"
+                className="min-w-[1526px] min-h-[966px] object-cover rounded-3xl rotate-90" style={{
+                  width: '1526px',
+                  height: '966px',
+                }}
               />
             )
           )}
