@@ -8,6 +8,22 @@ export default function Result() {
   const [printer, setPrinter] = useState(""); // Printer selection
   const [printSize, setPrintSize] = useState("4x6"); // Default print size
 
+  const handleReset = () => {
+    // Clear localStorage
+    localStorage.removeItem("swappedPhoto");
+    localStorage.clear(); // Clear all localStorage items if needed
+
+    // Reset component state
+    setQRCode(false);
+    setPrint(false);
+    setPrintMessage(false);
+    setPrinter("");
+    setPrintSize("4x6");
+
+    // Navigate back to start or reload page
+    window.location.reload();
+  };
+
   const handlePrint = async () => {
     const result = localStorage.getItem("swappedPhoto");
 
@@ -48,6 +64,7 @@ export default function Result() {
             src={localStorage.getItem("swappedPhoto")}
             alt="Swapped result"
             className="w-full h-full object-cover rounded-3xl"
+            onClick={handleReset}
           />
         </div>
       </div>
