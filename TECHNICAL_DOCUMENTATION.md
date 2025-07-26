@@ -419,6 +419,12 @@ app.run(debug=True)
 2. **Backgrounds**: Replace images in `clients/public/ui/`
 3. **Fonts**: Update font files in `clients/public/font/`
 
+### Customizing Overlay
+1. **Folder**: Go to `CPU_AI/../../`
+2. **Add overlay**: Make sure it's png
+3. **Modify JSON**: Go to your project and find `fswap.json` object number `"10"`
+4. **Modify the path**: Modify the file `filename.png` to your `overlay.png`
+
 ### Extending API
 
 ```python
