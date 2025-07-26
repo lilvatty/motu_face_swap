@@ -22,7 +22,7 @@
   "4": {
     "inputs": {
       "filename_prefix": "ai",
-      "images": ["6", 0]
+      "images": ["9", 0]
     },
     "class_type": "SaveImage",
     "_meta": {
@@ -71,7 +71,7 @@
       "x_offset": 0,
       "y_offset": 0,
       "rotation": 0,
-      "opacity": 0,
+      "opacity": 1.0,
       "base_image": ["6", 0],
       "overlay_image": ["10", 0],
       "optional_mask": ["10", 1]

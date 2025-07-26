@@ -619,6 +619,13 @@ class FaceSwapProcessor:
         """Update workflow with image paths."""
         workflow["1"]["inputs"]["image"] = template_path
         workflow["3"]["inputs"]["image"] = source_path
+        # Preserve overlay path if it exists, otherwise use default
+        if "10" in workflow and "inputs" in workflow["10"]:
+            if not workflow["10"]["inputs"]["image"] or workflow["10"]["inputs"]["image"] == "the_overlay.png":
+                # Check if there's a default overlay file available
+                overlay_path = "the_overlay.png"
+                if os.path.exists(overlay_path):
+                    workflow["10"]["inputs"]["image"] = overlay_path
         return workflow
     
     def _queue_prompt(self, prompt: Dict[str, Any]) -> Dict[str, Any]:
