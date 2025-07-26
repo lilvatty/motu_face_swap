@@ -132,6 +132,11 @@ class ConfigManager:
             'include_timestamp': 'true'
         }
         
+        # Add overlay configuration
+        self.config['Overlay'] = {
+            'overlay_folder': 'overlays'
+        }
+        
         try:
             default_printer = win32print.GetDefaultPrinter()
         except Exception:
@@ -147,7 +152,7 @@ class ConfigManager:
     
     def _validate_config(self) -> None:
         """Validate configuration settings."""
-        required_sections = ['HotFolder', 'Printer', 'ImageSaving']
+        required_sections = ['HotFolder', 'Printer', 'ImageSaving', 'Overlay']
         for section in required_sections:
             if not self.config.has_section(section):
                 raise ConfigurationError(f"Missing required section: {section}")
@@ -172,6 +177,14 @@ class ConfigManager:
                 logger.warning(f"Could not create save folder: {e}")
                 self.config['ImageSaving']['enabled'] = 'false'
                 self.save_config()
+                
+        # Ensure overlay folder exists
+        overlay_folder_path = self.get_overlay_folder_path()
+        try:
+            os.makedirs(overlay_folder_path, exist_ok=True)
+            logger.info(f"Overlay folder ready at: {overlay_folder_path}")
+        except Exception as e:
+            logger.warning(f"Could not create overlay folder: {e}")
     
     def save_config(self) -> None:
         """Save configuration to file."""
@@ -232,6 +245,16 @@ class ConfigManager:
             'save_format': self.config['ImageSaving'].get('save_format', 'jpg'),
             'include_timestamp': self.config['ImageSaving'].get('include_timestamp', 'true')
         }
+    
+    def get_overlay_folder_path(self) -> str:
+        """Get the overlay folder path."""
+        overlay_folder = self.config['Overlay'].get('overlay_folder', 'overlays')
+        
+        # If it's a relative path, make it relative to the server directory
+        if not os.path.isabs(overlay_folder):
+            overlay_folder = os.path.join(Path(__file__).parent, overlay_folder)
+        
+        return overlay_folder
 
 
 class DatabaseManager:
@@ -782,6 +805,9 @@ class FaceSwapApp:
         project_root = Path(__file__).parent.parent
         self.base_asset_dir = str(project_root / 'clients/src/assets')
         
+        # Overlay directory setup - now configurable via config.ini
+        self.overlay_dir = self.config_manager.get_overlay_folder_path()
+        
         # Initialize hot folder monitor
         self.hot_folder_monitor = HotFolderMonitor(
             self.config_manager, self.face_swap_processor, self.printer, self.base_asset_dir, self
@@ -1077,6 +1103,95 @@ class FaceSwapApp:
                 
             except Exception as e:
                 logger.error(f"Error in image saving test: {e}")
+                return jsonify({'error': 'Internal server error'}), 500
+            
+        @self.app.route('/api/overlay/config', methods=['GET', 'PUT'])
+        def overlay_config():
+            """Get or update overlay configuration."""
+            try:
+                if request.method == 'GET':
+                    overlay_folder = self.config_manager.config['Overlay'].get('overlay_folder', 'overlays')
+                    overlay_path = self.config_manager.get_overlay_folder_path()
+                    
+                    return jsonify({
+                        'overlay_folder': overlay_folder,
+                        'overlay_path': overlay_path,
+                        'folder_exists': os.path.exists(overlay_path)
+                    })
+                
+                elif request.method == 'PUT':
+                    data = request.json
+                    
+                    if 'overlay_folder' in data:
+                        overlay_folder = data['overlay_folder'].strip()
+                        if overlay_folder:
+                            # Update the configuration
+                            self.config_manager.update_config('Overlay', 'overlay_folder', overlay_folder)
+                            
+                            # Update the instance variable and create the new directory
+                            self.overlay_dir = self.config_manager.get_overlay_folder_path()
+                            try:
+                                os.makedirs(self.overlay_dir, exist_ok=True)
+                                logger.info(f"Overlay folder updated to: {self.overlay_dir}")
+                            except Exception as e:
+                                logger.warning(f"Could not create new overlay folder: {e}")
+                                return jsonify({'error': f'Could not create overlay folder: {e}'}), 400
+                        else:
+                            return jsonify({'error': 'Overlay folder cannot be empty'}), 400
+                    
+                    return jsonify({
+                        'message': 'Overlay configuration updated successfully',
+                        'overlay_path': self.overlay_dir
+                    })
+                
+            except Exception as e:
+                logger.error(f"Error in overlay config: {e}")
+                return jsonify({'error': 'Internal server error'}), 500
+        
+        @self.app.route('/api/overlay', methods=['POST'])
+        def upload_overlay():
+            """Upload and configure overlay image for face swap workflow."""
+            try:
+                overlay = request.files.get('overlay')
+                if not overlay:
+                    return jsonify({'error': 'Overlay image is required'}), 400
+
+                # Generate unique filename for overlay
+                overlay_filename = f"overlay_{uuid.uuid4()}.png"
+                overlay_path = os.path.join(self.overlay_dir, overlay_filename)
+                overlay.save(overlay_path)
+
+                try:
+                    # Load and update workflow configuration
+                    with open(self.face_swap_processor.workflow_file, 'r', encoding='utf-8') as f:
+                        workflow = json.load(f)
+
+                    # Update node 10 with overlay image path
+                    if "10" in workflow and "inputs" in workflow["10"]:
+                        workflow["10"]["inputs"]["image"] = overlay_path
+                    else:
+                        logger.warning("Node 10 not found in workflow or missing inputs")
+
+                    # Save updated workflow
+                    with open(self.face_swap_processor.workflow_file, 'w', encoding='utf-8') as f:
+                        json.dump(workflow, f, indent=2)
+
+                    logger.info(f"Overlay uploaded and workflow updated: {overlay_path}")
+                    return jsonify({
+                        "message": "Overlay uploaded and configured successfully", 
+                        "path": overlay_path,
+                        "filename": overlay_filename
+                    })
+
+                except Exception as e:
+                    logger.error(f"Error updating workflow with overlay: {e}")
+                    # Clean up uploaded file if workflow update fails
+                    if os.path.exists(overlay_path):
+                        os.remove(overlay_path)
+                    return jsonify({"error": f"Failed to update workflow: {str(e)}"}), 500
+
+            except Exception as e:
+                logger.error(f"Error in overlay upload: {e}")
                 return jsonify({'error': 'Internal server error'}), 500
         
         @self.app.errorhandler(404)
