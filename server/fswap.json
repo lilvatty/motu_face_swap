@@ -83,7 +83,7 @@
   },
   "10": {
     "inputs": {
-      "image": "overlay.png",
+      "image": "the_overlay.png",
       "upload": "image"
     },
     "class_type": "LoadImage",
