@@ -98,14 +98,18 @@ class ConfigManager:
                 self.config.read(self.config_file)
                 logger.info(f"Configuration loaded from {self.config_file}")
                 
+                # Ensure all required sections exist, add missing ones
+                self._ensure_required_sections()
+                
                 # Ensure hot folder path is absolute and accessible
-                hot_folder_path = self.config['HotFolder']['path']
-                if not os.path.isabs(hot_folder_path):
-                    # Convert relative path to absolute based on project root
-                    project_root = Path(__file__).parent.parent
-                    hot_folder_path = str(project_root / hot_folder_path)
-                    self.config['HotFolder']['path'] = hot_folder_path
-                    self.save_config()
+                if self.config.has_section('HotFolder'):
+                    hot_folder_path = self.config['HotFolder']['path']
+                    if not os.path.isabs(hot_folder_path):
+                        # Convert relative path to absolute based on project root
+                        project_root = Path(__file__).parent.parent
+                        hot_folder_path = str(project_root / hot_folder_path)
+                        self.config['HotFolder']['path'] = hot_folder_path
+                        self.save_config()
                     
             else:
                 self._create_default_config()
@@ -128,13 +132,9 @@ class ConfigManager:
         # Add image saving configuration
         self.config['ImageSaving'] = {
             'enabled': 'true',
+            'save_folder': r'G:\My Drive\Motu Face Swap',  # modify here
             'save_format': 'png',
             'include_timestamp': 'true'
-        }
-        
-        # Add overlay configuration
-        self.config['Overlay'] = {
-            'overlay_folder': 'overlays'
         }
         
         try:
@@ -150,9 +150,45 @@ class ConfigManager:
         
         self.save_config()
     
+    def _ensure_required_sections(self) -> None:
+        """Ensure all required configuration sections exist."""
+        project_root = Path(__file__).parent.parent
+        
+        # Ensure HotFolder section exists
+        if not self.config.has_section('HotFolder'):
+            self.config['HotFolder'] = {
+                'path': str(project_root / 'hot_folder'),
+                'enabled': 'true'
+            }
+        
+        # Ensure ImageSaving section exists
+        if not self.config.has_section('ImageSaving'):
+            self.config['ImageSaving'] = {
+                'enabled': 'true',
+                'save_folder': r'G:\My Drive\Motu Face Swap',  # modify here
+                'save_format': 'png',
+                'include_timestamp': 'true'
+            }
+        
+        # Ensure Printer section exists
+        if not self.config.has_section('Printer'):
+            try:
+                default_printer = win32print.GetDefaultPrinter()
+            except Exception:
+                default_printer = 'Default Printer'
+                logger.warning("Could not detect default printer")
+            
+            self.config['Printer'] = {
+                'default_printer': default_printer,
+                'default_print_size': '4x6'
+            }
+        
+        # Save the config if any sections were added
+        self.save_config()
+    
     def _validate_config(self) -> None:
         """Validate configuration settings."""
-        required_sections = ['HotFolder', 'Printer', 'ImageSaving', 'Overlay']
+        required_sections = ['HotFolder', 'Printer', 'ImageSaving']
         for section in required_sections:
             if not self.config.has_section(section):
                 raise ConfigurationError(f"Missing required section: {section}")
@@ -177,14 +213,6 @@ class ConfigManager:
                 logger.warning(f"Could not create save folder: {e}")
                 self.config['ImageSaving']['enabled'] = 'false'
                 self.save_config()
-                
-        # Ensure overlay folder exists
-        overlay_folder_path = self.get_overlay_folder_path()
-        try:
-            os.makedirs(overlay_folder_path, exist_ok=True)
-            logger.info(f"Overlay folder ready at: {overlay_folder_path}")
-        except Exception as e:
-            logger.warning(f"Could not create overlay folder: {e}")
     
     def save_config(self) -> None:
         """Save configuration to file."""
@@ -245,16 +273,6 @@ class ConfigManager:
             'save_format': self.config['ImageSaving'].get('save_format', 'jpg'),
             'include_timestamp': self.config['ImageSaving'].get('include_timestamp', 'true')
         }
-    
-    def get_overlay_folder_path(self) -> str:
-        """Get the overlay folder path."""
-        overlay_folder = self.config['Overlay'].get('overlay_folder', 'overlays')
-        
-        # If it's a relative path, make it relative to the server directory
-        if not os.path.isabs(overlay_folder):
-            overlay_folder = os.path.join(Path(__file__).parent, overlay_folder)
-        
-        return overlay_folder
 
 
 class DatabaseManager:
@@ -805,8 +823,9 @@ class FaceSwapApp:
         project_root = Path(__file__).parent.parent
         self.base_asset_dir = str(project_root / 'clients/src/assets')
         
-        # Overlay directory setup - now configurable via config.ini
-        self.overlay_dir = self.config_manager.get_overlay_folder_path()
+        # Overlay directory setup
+        self.overlay_dir = os.path.join(Path(__file__).parent, 'overlays')
+        os.makedirs(self.overlay_dir, exist_ok=True)
         
         # Initialize hot folder monitor
         self.hot_folder_monitor = HotFolderMonitor(
@@ -1103,49 +1122,6 @@ class FaceSwapApp:
                 
             except Exception as e:
                 logger.error(f"Error in image saving test: {e}")
-                return jsonify({'error': 'Internal server error'}), 500
-            
-        @self.app.route('/api/overlay/config', methods=['GET', 'PUT'])
-        def overlay_config():
-            """Get or update overlay configuration."""
-            try:
-                if request.method == 'GET':
-                    overlay_folder = self.config_manager.config['Overlay'].get('overlay_folder', 'overlays')
-                    overlay_path = self.config_manager.get_overlay_folder_path()
-                    
-                    return jsonify({
-                        'overlay_folder': overlay_folder,
-                        'overlay_path': overlay_path,
-                        'folder_exists': os.path.exists(overlay_path)
-                    })
-                
-                elif request.method == 'PUT':
-                    data = request.json
-                    
-                    if 'overlay_folder' in data:
-                        overlay_folder = data['overlay_folder'].strip()
-                        if overlay_folder:
-                            # Update the configuration
-                            self.config_manager.update_config('Overlay', 'overlay_folder', overlay_folder)
-                            
-                            # Update the instance variable and create the new directory
-                            self.overlay_dir = self.config_manager.get_overlay_folder_path()
-                            try:
-                                os.makedirs(self.overlay_dir, exist_ok=True)
-                                logger.info(f"Overlay folder updated to: {self.overlay_dir}")
-                            except Exception as e:
-                                logger.warning(f"Could not create new overlay folder: {e}")
-                                return jsonify({'error': f'Could not create overlay folder: {e}'}), 400
-                        else:
-                            return jsonify({'error': 'Overlay folder cannot be empty'}), 400
-                    
-                    return jsonify({
-                        'message': 'Overlay configuration updated successfully',
-                        'overlay_path': self.overlay_dir
-                    })
-                
-            except Exception as e:
-                logger.error(f"Error in overlay config: {e}")
                 return jsonify({'error': 'Internal server error'}), 500
         
         @self.app.route('/api/overlay', methods=['POST'])

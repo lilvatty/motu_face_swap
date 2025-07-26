@@ -94,7 +94,7 @@ export default function Result() {
       {qrCode && (
         <div className="z-10 absolute inset-0 bg-black/80 grid">
           <img
-            src="/qr_code_result_demo.png"
+            src="/qr.png"
             alt="QR Code Result"
             onClick={() => setQRCode(false)}
             className="w-3/5 m-auto"
