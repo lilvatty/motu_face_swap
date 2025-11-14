@@ -3,8 +3,8 @@ import React, { useState } from "react";
 // Images
 // 1. Upload di folder public
 // 2. E.G: import men from "/nama_file.png";
-import Men from "../assets/men/ai_00021_.png";
-import Women from "../assets/women/ai_00040_.png";
+import Men from "../../public/men.jpg"
+import Women from "../../public/women.jpg"
 
 export default function Gender() {
   const [selectedGender, setSelectedGender] = useState("");

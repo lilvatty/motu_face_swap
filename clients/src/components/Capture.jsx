@@ -78,6 +78,38 @@ export default function Capture({ goBack, goTo }) {
     setIsVideoVisible(false);
   };
 
+  const compressImage = (imageUrl, maxWidth = 800, quality = 0.7) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous"; // Important for fetching external images
+    img.src = imageUrl;
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      let width = img.width;
+      let height = img.height;
+
+      // Calculate new dimensions to maintain aspect ratio
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width);
+        width = maxWidth;
+      }
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Convert the canvas content to a compressed JPEG data URL
+      const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
+      resolve(compressedDataUrl);
+    };
+
+    img.onerror = (error) => reject(new Error("Failed to load image for compression."));
+  });
+};
+
   const handleSwapFace = async (sourceImageBlob) => {
     const templateUrl = localStorage.getItem("selectedTemplate");
     const sourceFile = new File([sourceImageBlob], "source.jpg", {
@@ -90,7 +122,18 @@ export default function Capture({ goBack, goTo }) {
       const swappedImageUrl = await swapFace(templateUrl, sourceFile);
       if (swappedImageUrl) {
         setCapturedPhoto(swappedImageUrl);
-        localStorage.setItem("swappedPhoto", swappedImageUrl);
+
+        // --- ⚠️ NEW STEP HERE: RESIZE/COMPRESS THE DATA ⚠️ ---
+            const maxDimension = 600; // Resize to a max width of 600px
+            const jpegQuality = 0.6; // Compress to 60% quality
+            
+            const compressedPhotoData = await compressImage(
+                swappedImageUrl, 
+                maxDimension, 
+                jpegQuality
+            );
+        
+        localStorage.setItem("swappedPhoto", compressedPhotoData);
       }
     } catch (error) {
       console.error("Error swapping face:", error);
@@ -107,7 +150,7 @@ export default function Capture({ goBack, goTo }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col-reverse items-center justify-center">
       {isLoading && (
         <div className="z-10 absolute inset-0 grid mb-[5em]">
           <img src="/loading.gif" alt="loading" className="m-auto w-2/5" />
@@ -121,11 +164,11 @@ export default function Capture({ goBack, goTo }) {
               <video
                 ref={videoRef}
                 autoPlay
-                className="min-w-[1526px] min-h-[966px] object-cover rounded-3xl transform scale-x-[-1] rotate-90 origin-center"
-                style={{
-                  width: '1526px',
-                  height: '966px',
-                }}
+                className="w-full h-full object-cover rounded-3xl transform scale-x-[-1] origin-center"
+                // style={{
+                //   width: '1526px',
+                //   height: '966px',
+                // }}
               />
               {isCountingDown && (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -146,10 +189,11 @@ export default function Capture({ goBack, goTo }) {
                     : URL.createObjectURL(capturedPhoto)
                 }
                 alt="Captured"
-                className="min-w-[1526px] min-h-[966px] object-cover rounded-3xl rotate-90" style={{
-                  width: '1526px',
-                  height: '966px',
-                }}
+                className="w-full h-full object-cover rounded-3xl"
+                // style={{
+                //   width: '1526px',
+                //   height: '966px',
+                // }}
               />
             )
           )}
@@ -157,7 +201,7 @@ export default function Capture({ goBack, goTo }) {
         <canvas ref={canvasRef} className="hidden" />
       </div>
 
-      <div className="flex mt-16 gap-x-[67px]">
+      <div className="flex mb-16 gap-x-[67px]">
         {isVideoVisible ? (
           <>
             <button

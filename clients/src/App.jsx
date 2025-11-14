@@ -14,7 +14,7 @@ import SaveButton from "./components/ui/SaveButton";
 import SmallButtons from "./components/ui/SmallButtons";
 
 function App() {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [started, setStarted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [animationDirection, setAnimationDirection] = useState("forward");
@@ -99,6 +99,7 @@ function App() {
   return (
     <div
       className="h-screen m-0 p-0 flex flex-col justify-evenly relative overflow-hidden"
+      onClick={start}
       style={{
         backgroundImage: `url(${backgroundImage[step]})`,
         backgroundSize: "cover",

@@ -57,7 +57,7 @@ export default function Result() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col-reverse items-center justify-center">
       <div className="">
         <div className="w-[966px] h-[1526px] border-4 border-black rounded-3xl flex items-center justify-center overflow-hidden">
           <img
@@ -69,7 +69,7 @@ export default function Result() {
         </div>
       </div>
 
-      <div className="flex mt-16 gap-x-[67px]">
+      <div className="flex mb-16 gap-x-[67px]">
         <button
           onClick={() => {
             setQRCode((prevState) => !prevState);
