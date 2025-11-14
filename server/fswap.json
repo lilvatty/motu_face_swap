@@ -1,8 +1,7 @@
 {
   "1": {
     "inputs": {
-      "image": "3.jpg",
-      "upload": "image"
+      "image": "ComfyUI_0001 (1).jpg"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -11,8 +10,7 @@
   },
   "3": {
     "inputs": {
-      "image": "12.jpg",
-      "upload": "image"
+      "image": "20251113_121412_483.jpg"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -22,7 +20,10 @@
   "4": {
     "inputs": {
       "filename_prefix": "ai",
-      "images": ["9", 0]
+      "images": [
+        "9",
+        0
+      ]
     },
     "class_type": "SaveImage",
     "_meta": {
@@ -37,9 +38,18 @@
       "face_restore_model": "codeformer-v0.1.0.pth",
       "face_restore_visibility": 1,
       "codeformer_weight": 1,
-      "input_image": ["1", 0],
-      "source_image": ["3", 0],
-      "options": ["7", 0]
+      "input_image": [
+        "1",
+        0
+      ],
+      "source_image": [
+        "3",
+        0
+      ],
+      "options": [
+        "7",
+        0
+      ]
     },
     "class_type": "ReActorFaceSwapOpt",
     "_meta": {
@@ -65,16 +75,25 @@
     "inputs": {
       "overlay_resize": "None",
       "resize_method": "nearest-exact",
-      "rescale_factor": 1,
+      "rescale_factor": 1.0000000000000002,
       "width": 512,
       "height": 512,
       "x_offset": 0,
       "y_offset": 0,
-      "rotation": 0,
-      "opacity": 1.0,
-      "base_image": ["6", 0],
-      "overlay_image": ["10", 0],
-      "optional_mask": ["10", 1]
+      "rotation": 9.992007221626409e-15,
+      "opacity": 1,
+      "base_image": [
+        "6",
+        0
+      ],
+      "overlay_image": [
+        "10",
+        0
+      ],
+      "optional_mask": [
+        "10",
+        1
+      ]
     },
     "class_type": "Image Overlay",
     "_meta": {
@@ -83,8 +102,7 @@
   },
   "10": {
     "inputs": {
-      "image": "the_overlay.png",
-      "upload": "image"
+      "image": "ipoc.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -94,7 +112,10 @@
   "11": {
     "inputs": {
       "filename_prefix": "hasil",
-      "images": ["9", 0]
+      "images": [
+        "9",
+        0
+      ]
     },
     "class_type": "SaveImage",
     "_meta": {
