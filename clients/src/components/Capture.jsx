@@ -63,12 +63,14 @@ export default function Capture({ goBack, goTo }) {
   const onCapture = () => {
     const canvas = canvasRef.current;
     const video = videoRef.current;
-    const context = canvas.getContext("2d");
+    // const context = canvas.getContext("2d");
+
+    cropVideoToAspect(video, canvas, 900, 1600);
 
     // Mirror the canvas to match the video preview
-    context.scale(-1, 1);
-    context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
-    context.scale(-1, 1); // Reset the scale
+    // context.scale(-1, 1);
+    // context.drawImage(video, -canvas.width, 0, canvas.width, canvas.height);
+    // context.scale(-1, 1); // Reset the scale
 
     canvas.toBlob((blob) => {
       setCapturedPhoto(blob);
@@ -77,6 +79,50 @@ export default function Capture({ goBack, goTo }) {
 
     setIsVideoVisible(false);
   };
+
+  function cropVideoToAspect(video, canvas, aspectW, aspectH) {
+  const ctx = canvas.getContext("2d");
+
+  const vw = video.videoWidth;
+  const vh = video.videoHeight;
+
+  const videoRatio = vw / vh;
+  const targetRatio = aspectW / aspectH;
+
+  let cropW, cropH;
+
+  // Determine whether to crop horizontally or vertically
+  if (videoRatio > targetRatio) {
+    // Video is wider → crop width
+    cropH = vh;
+    cropW = vh * targetRatio;
+  } else {
+    // Video is taller → crop height
+    cropW = vw;
+    cropH = vw / targetRatio;
+  }
+
+  // Crop centered
+  const sx = (vw - cropW) / 2;
+  const sy = (vh - cropH) / 2;
+
+  // Set final output size
+  canvas.width = aspectW;
+  canvas.height = aspectH;
+
+  // Mirror horizontally
+  ctx.scale(-1, 1);
+
+  ctx.drawImage(
+    video,
+    sx, sy,         // crop start
+    cropW, cropH,   // crop size
+    -aspectW, 0,    // draw flipped
+    aspectW, aspectH
+  );
+
+  ctx.scale(-1, 1);
+}
 
   const compressImage = (imageUrl, maxWidth = 800, quality = 0.7) => {
   return new Promise((resolve, reject) => {

@@ -109,6 +109,11 @@ function App() {
       }}
     >
       <div
+      className={`absolute left-0 top-0 ${started ? 'hidden' : 'flex'}`}
+      onClick={start}>
+        <img src="/ui/design.png" alt="design.png" />
+      </div>
+      <div
         className={`flex flex-col items-center justify-center h-full ${
           started ? "hidden" : "block"
         }`}
