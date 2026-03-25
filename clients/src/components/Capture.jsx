@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { swapFace } from "../API";
 
-export default function Capture({ goBack, goTo }) {
+export default function Capture({ goBack, goTo, isPortrait }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [capturedPhoto, setCapturedPhoto] = useState(null);
@@ -65,7 +65,7 @@ export default function Capture({ goBack, goTo }) {
     const video = videoRef.current;
     // const context = canvas.getContext("2d");
 
-    cropVideoToAspect(video, canvas, 900, 1600);
+    cropVideoToAspect(video, canvas, isPortrait ? 1200 : 1800 , isPortrait ? 1800 : 1200);
 
     // Mirror the canvas to match the video preview
     // context.scale(-1, 1);
@@ -124,7 +124,7 @@ export default function Capture({ goBack, goTo }) {
   ctx.scale(-1, 1);
 }
 
-  const compressImage = (imageUrl, maxWidth = 800, quality = 0.7) => {
+  const compressImage = (imageUrl, maxWidth = 1080, quality = 0.7) => {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = "anonymous"; // Important for fetching external images
@@ -170,8 +170,8 @@ export default function Capture({ goBack, goTo }) {
         setCapturedPhoto(swappedImageUrl);
 
         // --- ⚠️ NEW STEP HERE: RESIZE/COMPRESS THE DATA ⚠️ ---
-            const maxDimension = 600; // Resize to a max width of 600px
-            const jpegQuality = 0.6; // Compress to 60% quality
+            const maxDimension = 2000; // Resize to a max width of 600px
+            const jpegQuality = 1.0; // Compress to 60% quality
             
             const compressedPhotoData = await compressImage(
                 swappedImageUrl, 
@@ -196,21 +196,21 @@ export default function Capture({ goBack, goTo }) {
   };
 
   return (
-    <div className="flex flex-col-reverse items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       {isLoading && (
         <div className="z-10 absolute inset-0 grid mb-[5em]">
-          <img src="/loading.gif" alt="loading" className="m-auto w-2/5" />
+          <img src="/loading.gif" alt="loading" className="m-auto w-1/5" />
         </div>
       )}
 
       <div className="relative">
-        <div className="w-[966px] h-[1526px] bg-black rounded-3xl flex items-center justify-center overflow-hidden">
+        <div className={`${!isPortrait ? "w-[1920px] h-[1080px]" : "w-[1080px] h-[1920px]"} bg-black flex items-center justify-center overflow-hidden`}>
           {isVideoVisible ? (
             <>
               <video
                 ref={videoRef}
                 autoPlay
-                className="w-full h-full object-cover rounded-3xl transform scale-x-[-1] origin-center"
+                className="w-full h-full object-cover transform scale-x-[-1] origin-center"
                 // style={{
                 //   width: '1526px',
                 //   height: '966px',
@@ -235,7 +235,7 @@ export default function Capture({ goBack, goTo }) {
                     : URL.createObjectURL(capturedPhoto)
                 }
                 alt="Captured"
-                className="w-full h-full object-cover rounded-3xl"
+                className={`${!isPortrait ? "w-[1920px] h-[1080px] object-contain" : "w-[1080px] h-[1920px] object-cover"}`}
                 // style={{
                 //   width: '1526px',
                 //   height: '966px',
@@ -247,7 +247,7 @@ export default function Capture({ goBack, goTo }) {
         <canvas ref={canvasRef} className="hidden" />
       </div>
 
-      <div className="flex mb-16 gap-x-[67px]">
+      <div className="flex mb-16 gap-x-[67px] absolute bottom-0">
         {isVideoVisible ? (
           <>
             <button
@@ -255,7 +255,7 @@ export default function Capture({ goBack, goTo }) {
               className="w-[418px] h-[126px] rounded-3xl border-4 border-[#002448] text-[3.25em] font-semibold"
               disabled={isCountingDown}
             >
-              <span className="">Back</span>
+              <span className="text-white">Back</span>
             </button>
             <button
               onClick={startCountdown}
@@ -271,7 +271,7 @@ export default function Capture({ goBack, goTo }) {
               onClick={handleCancel}
               className="w-[418px] h-[126px] rounded-3xl border-4 border-[#002448] text-[3.25em] font-semibold"
             >
-              <span className="">Retake</span>
+              <span className="text-white">Retake</span>
             </button>
             <button
               onClick={() => handleSwapFace(capturedPhoto)}

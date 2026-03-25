@@ -57,19 +57,19 @@ export default function Result() {
   };
 
   return (
-    <div className="flex flex-col-reverse items-center justify-center">
-      <div className="">
-        <div className="w-[966px] h-[1526px] border-4 border-black rounded-3xl flex items-center justify-center overflow-hidden">
+    <div className="flex flex-col items-center justify-center w-full h-screen overflow-hidden">
+      <div className="w-full p-4 flex items-center justify-center">
+        <div className="w-[1200px] border-4 border-black rounded-3xl flex items-center justify-center overflow-hidden">
           <img
             src={localStorage.getItem("swappedPhoto")}
             alt="Swapped result"
-            className="w-full h-full object-cover rounded-3xl"
+            className="w-full h-auto object-cover rounded-3xl"
             onClick={handleReset}
           />
         </div>
       </div>
 
-      <div className="flex mb-16 gap-x-[67px]">
+      <div className="flex gap-y-[67px]">
         <button
           onClick={() => {
             setQRCode((prevState) => !prevState);
@@ -92,18 +92,19 @@ export default function Result() {
       </div>
 
       {qrCode && (
-        <div className="z-10 absolute inset-0 bg-black/80 grid">
+        <div 
+        onClick={() => setQRCode(false)}
+        className="z-10 absolute top-0 left-0 flex h-full w-full bg-black/40">
           <img
             src="/qr.png"
             alt="QR Code Result"
-            onClick={() => setQRCode(false)}
-            className="w-3/5 m-auto"
+            className="m-auto w-[500px]"
           />
         </div>
       )}
 
       {print && (
-        <div className="z-10 absolute inset-0 bg-black/80 text-white grid text-[4em] p-4">
+        <div className="z-10 absolute inset-0 h-screen top-0 bg-black/80 text-white grid text-[4em] p-4">
           <div className="m-auto">
             <h1 className="mb-4">Print the image?</h1>
             <div className="flex gap-4">

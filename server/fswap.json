@@ -1,7 +1,7 @@
 {
   "1": {
     "inputs": {
-      "image": "Gemini_Generated_Image_c4w0cwc4w0cwc4w0.png"
+      "image": "PANDUIT 1 - GLOBE.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -10,7 +10,7 @@
   },
   "3": {
     "inputs": {
-      "image": "20251120_072940_146.jpg"
+      "image": "ComfyUI_temp_oxnkk_00007_.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -21,99 +21,20 @@
     "inputs": {
       "filename_prefix": "ai",
       "images": [
-        "9",
+        "78",
         0
       ]
     },
     "class_type": "SaveImage",
     "_meta": {
       "title": "Save Image"
-    }
-  },
-  "6": {
-    "inputs": {
-      "enabled": true,
-      "swap_model": "inswapper_128.onnx",
-      "facedetection": "retinaface_resnet50",
-      "face_restore_model": "codeformer-v0.1.0.pth",
-      "face_restore_visibility": 1,
-      "codeformer_weight": 1,
-      "input_image": [
-        "19",
-        0
-      ],
-      "source_image": [
-        "3",
-        0
-      ],
-      "options": [
-        "7",
-        0
-      ]
-    },
-    "class_type": "ReActorFaceSwapOpt",
-    "_meta": {
-      "title": "ReActor 🌌 Fast Face Swap [OPTIONS]"
-    }
-  },
-  "7": {
-    "inputs": {
-      "input_faces_order": "large-small",
-      "input_faces_index": "0,1,2",
-      "detect_gender_input": "no",
-      "source_faces_order": "large-small",
-      "source_faces_index": "0,1,2",
-      "detect_gender_source": "no",
-      "console_log_level": 2
-    },
-    "class_type": "ReActorOptions",
-    "_meta": {
-      "title": "ReActor 🌌 Options"
-    }
-  },
-  "9": {
-    "inputs": {
-      "overlay_resize": "None",
-      "resize_method": "nearest-exact",
-      "rescale_factor": 1.0000000000000002,
-      "width": 512,
-      "height": 512,
-      "x_offset": 0,
-      "y_offset": 0,
-      "rotation": 9.992007221626409e-15,
-      "opacity": 1,
-      "base_image": [
-        "21",
-        0
-      ],
-      "overlay_image": [
-        "10",
-        0
-      ],
-      "optional_mask": [
-        "10",
-        1
-      ]
-    },
-    "class_type": "Image Overlay",
-    "_meta": {
-      "title": "Image Overlay"
-    }
-  },
-  "10": {
-    "inputs": {
-      "image": "BYTEPLUS - 1.png"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "OVERLAY INPUT"
     }
   },
   "11": {
     "inputs": {
       "filename_prefix": "hasil",
       "images": [
-        "9",
+        "78",
         0
       ]
     },
@@ -122,159 +43,92 @@
       "title": "Save Image"
     }
   },
-  "12": {
+  "77": {
     "inputs": {
-      "weight": 1,
-      "weight_faceidv2": 1,
-      "weight_type": "linear",
-      "combine_embeds": "concat",
-      "start_at": 0,
-      "end_at": 1,
-      "embeds_scaling": "V only",
-      "model": [
-        "17",
-        0
-      ],
-      "ipadapter": [
-        "17",
-        1
-      ],
-      "image": [
-        "3",
-        0
-      ]
-    },
-    "class_type": "IPAdapterFaceID",
-    "_meta": {
-      "title": "IPAdapter FaceID"
-    }
-  },
-  "14": {
-    "inputs": {
-      "seed": 200489186262909,
-      "steps": 20,
-      "cfg": 8,
-      "sampler_name": "euler",
-      "scheduler": "simple",
-      "denoise": 0.20000000000000004,
-      "model": [
-        "12",
-        0
-      ],
-      "positive": [
-        "15",
-        1
-      ],
-      "negative": [
-        "15",
-        2
-      ],
-      "latent_image": [
-        "18",
-        0
-      ]
-    },
-    "class_type": "KSampler",
-    "_meta": {
-      "title": "KSampler"
-    }
-  },
-  "15": {
-    "inputs": {
-      "ckpt_name": "dreamshaper_8.safetensors",
-      "vae_name": "Baked VAE",
-      "clip_skip": -1,
-      "lora_name": "None",
-      "lora_model_strength": 1,
-      "lora_clip_strength": 1,
-      "positive": "CLIP_POSITIVE",
-      "negative": "CLIP_NEGATIVE",
-      "token_normalization": "none",
-      "weight_interpretation": "comfy",
-      "empty_latent_width": 512,
-      "empty_latent_height": 512,
-      "batch_size": 1
-    },
-    "class_type": "Efficient Loader",
-    "_meta": {
-      "title": "Efficient Loader"
-    }
-  },
-  "17": {
-    "inputs": {
-      "preset": "FACEID PLUS V2",
-      "lora_strength": 1,
-      "provider": "CUDA",
-      "model": [
-        "15",
-        0
-      ]
-    },
-    "class_type": "IPAdapterUnifiedLoaderFaceID",
-    "_meta": {
-      "title": "IPAdapter Unified Loader FaceID"
-    }
-  },
-  "18": {
-    "inputs": {
-      "pixels": [
-        "1",
-        0
-      ],
-      "vae": [
-        "15",
-        4
-      ]
-    },
-    "class_type": "VAEEncode",
-    "_meta": {
-      "title": "VAE Encode"
-    }
-  },
-  "19": {
-    "inputs": {
-      "samples": [
-        "14",
-        0
-      ],
-      "vae": [
-        "15",
-        4
-      ]
-    },
-    "class_type": "VAEDecode",
-    "_meta": {
-      "title": "VAE Decode"
-    }
-  },
-  "20": {
-    "inputs": {
-      "images": [
-        "19",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
-    }
-  },
-  "21": {
-    "inputs": {
-      "width": 1200,
-      "height": 1800,
-      "interpolation": "nearest-exact",
-      "method": "fill / crop",
+      "width": 1800,
+      "height": 1200,
+      "interpolation": "nearest",
+      "method": "keep proportion",
       "condition": "always",
       "multiple_of": 0,
       "image": [
-        "6",
+        "3",
         0
       ]
     },
     "class_type": "ImageResize+",
     "_meta": {
       "title": "🔧 Image Resize"
+    }
+  },
+  "78": {
+    "inputs": {
+      "invert_mask": false,
+      "blend_mode": "normal",
+      "opacity": 100,
+      "x_percent": 50,
+      "y_percent": 50,
+      "mirror": "None",
+      "scale": 1,
+      "aspect_ratio": 1,
+      "rotate": 0,
+      "transform_method": "lanczos",
+      "anti_aliasing": 0,
+      "background_image": [
+        "1",
+        0
+      ],
+      "layer_image": [
+        "80",
+        0
+      ],
+      "layer_mask": [
+        "79",
+        1
+      ]
+    },
+    "class_type": "LayerUtility: ImageBlendAdvance",
+    "_meta": {
+      "title": "LayerUtility: ImageBlendAdvance"
+    }
+  },
+  "79": {
+    "inputs": {
+      "model": "RMBG-2.0",
+      "sensitivity": 1,
+      "process_res": 1024,
+      "mask_blur": 0,
+      "mask_offset": 0,
+      "invert_output": false,
+      "refine_foreground": true,
+      "background": "Alpha",
+      "background_color": "#222222",
+      "image": [
+        "77",
+        0
+      ]
+    },
+    "class_type": "RMBG",
+    "_meta": {
+      "title": "Remove Background (RMBG)"
+    }
+  },
+  "80": {
+    "inputs": {
+      "hdr_intensity": 0.5,
+      "shadow_intensity": 0.25,
+      "highlight_intensity": 0.75,
+      "gamma_intensity": 0.25,
+      "contrast": 0.1,
+      "enhance_color": 0.25,
+      "image": [
+        "79",
+        0
+      ]
+    },
+    "class_type": "LayerFilter: HDREffects",
+    "_meta": {
+      "title": "LayerFilter: HDR Effects"
     }
   }
 }

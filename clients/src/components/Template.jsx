@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchTemplates } from "../API";
 
-const Template = () => {
+const Template = ({isPortrait}) => {
   const [templates, setTemplates] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0); // Track the center image index
 
@@ -65,7 +65,12 @@ const Template = () => {
                   className={`
                   object-cover cursor-pointer transition-all duration-300 ease-in-out rounded-3xl
                   ${
-                    position === 0
+                    position === 0 && !isPortrait
+                      ? "w-[950px] h-[639px] z-10 border-[4px] border-[#002448]"
+                      : "w-[206px] h-[381px] opacity-70 hover:opacity-90"
+                  }
+                  ${
+                    position === 0 && isPortrait
                       ? "w-[430px] h-[639px] z-10 border-[4px] border-[#002448]"
                       : "w-[206px] h-[381px] opacity-70 hover:opacity-90"
                   }

@@ -1,7 +1,7 @@
 const UserForm = ({ name, setName, phone, setPhone }) => {
   return (
     <div className="w-4/5 mx-auto flex flex-col main-text">
-      <img src="/logo_text.png" alt="logo" className="w-1/2 mx-auto" />
+      {/* <img src="/logo_text.png" alt="logo" className="w-1/2 mx-auto" /> */}
 
       <h1 className="text-center my-[52px]">Please Complete Your Data</h1>
 

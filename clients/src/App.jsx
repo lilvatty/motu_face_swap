@@ -18,6 +18,7 @@ function App() {
   const [started, setStarted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [animationDirection, setAnimationDirection] = useState("forward");
+  const [isPortrait, setIsPortrait] = useState(true);
 
   // State for UserForm Component
   const [name, setName] = useState("");
@@ -91,8 +92,8 @@ function App() {
       setPhone={setPhone}
     />,
     <Gender key={2} />,
-    <Template key={3} />,
-    <Capture key={4} goTo={nextStep} goBack={backStep} />,
+    <Template key={3} isPortrait={isPortrait} />,
+    <Capture key={4} goTo={nextStep} goBack={backStep} isPortrait={isPortrait} />,
     <Result key={5} />,
   ];
 
@@ -109,9 +110,9 @@ function App() {
       }}
     >
       <div
-      className={`absolute left-0 top-0 ${started ? 'hidden' : 'flex'}`}
+      className={`absolute left-0 top-0 w-full h-full ${started ? 'hidden' : 'flex'}`}
       onClick={start}>
-        <img src="/ui/design.png" alt="design.png" />
+        {/* <img className="object-cover h-full" src="/ui/bg-kopa.jpeg" alt="design.jpeg" /> */}
       </div>
       <div
         className={`flex flex-col items-center justify-center h-full ${
